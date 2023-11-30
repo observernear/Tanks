@@ -5,8 +5,10 @@ pygame.init()
 
 HEIGHT, WIDTH = 1024, 1024
 TILE_SIZE = 64
+BONUS_SIZE = TILE_SIZE // 2
 FPS = 60
 DIRECTS = [[0, -1], [1, 0], [0, 1], [-1, 0]]
+BONUSCD = 54
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
@@ -24,13 +26,23 @@ imgTanks = [
     pygame.image.load('images/tank5.png'),
     pygame.image.load('images/tank6.png'),
     pygame.image.load('images/tank7.png'),
-    pygame.image.load('images/tank8.png'),]
+    pygame.image.load('images/tank8.png')]
 imgBangs = [
     pygame.image.load('images/bang1.png'),
     pygame.image.load('images/bang2.png'),
     pygame.image.load('images/bang3.png'),
     pygame.image.load('images/bang2.png'),
-    pygame.image.load('images/bang1.png'),]
+    pygame.image.load('images/bang1.png')]
+imgBonuses = [
+    pygame.image.load('images/bonus_helmet.png'),
+    pygame.image.load('images/bonus_tank.png'),
+]
+imgNone = pygame.image.load('images/block_none.png')
+soundStart = pygame.mixer.Sound('sounds/level_start.mp3')
+soundShot = pygame.mixer.Sound('sounds/shot.wav')
+soundDestroy = pygame.mixer.Sound('sounds/destroy.wav')
+soundDead = pygame.mixer.Sound('sounds/dead.wav')
+soundFinish = pygame.mixer.Sound('sounds/level_finish.mp3')
 
 
 class UI:
@@ -46,7 +58,7 @@ class UI:
             if object.type == 'tank':
                 pygame.draw.rect(screen, object.color, (5 + i * 70, 5, 22, 22))
 
-                text = fontUI.render(str(object.rank), 1, 'black')
+                text = fontUI.render(str(object.bulletDamage), 1, 'black')
                 rect = text.get_rect(center=(5 + i * 70 + 11, 5 + 11))
                 screen.blit(text, rect)
 
@@ -126,6 +138,7 @@ class Tank:
         self.HP -= value
         if self.HP <= 0:
             objects.remove(self)
+            soundDead.play()
 
 
 class Bullet:
@@ -136,6 +149,7 @@ class Bullet:
         self.px, self.py = px, py
         self.dx, self.dy = dx, dy
         self.damage = damage
+        soundShot.play()
 
     def update(self):
         self.px += self.dx
@@ -147,6 +161,7 @@ class Bullet:
             for object in objects:
                 if object != self.parent and object.type != 'explosion' and object.rect.collidepoint(self.px, self.py):
                     bullets.remove(self)
+                    soundDestroy.play()
                     object.damage(self.damage)
                     Explosion(self.px, self.py)
                     break
@@ -194,8 +209,42 @@ class Obstacle:
             objects.remove(self)
 
 
+class Bonus:
+    def __init__(self, px, py, bonusNum):
+        bonuses.append(self)
+
+        self.rect = pygame.Rect(px, py, BONUS_SIZE, BONUS_SIZE)
+        self.bonusNum = bonusNum
+        self.image = pygame.transform.scale(
+            imgBonuses[self.bonusNum], (BONUS_SIZE, BONUS_SIZE))
+        self.frame = 0
+
+    def update(self):
+        self.frame += 0.1
+        for object in objects:
+            if object.type == 'tank' and object.rect.colliderect(self.rect):
+                bonuses.remove(self)
+                if self.bonusNum == 0:
+                    object.HP += 1
+                elif self.bonusNum == 1:
+                    if object.moveSpeed < 5:
+                        object.moveSpeed += 1
+                    if object.bulletDamage < 3:
+                        object.bulletDamage += 1
+
+        if self.frame >= 54:
+            bonuses.remove(self)
+
+    def draw(self):
+        if self.frame <= 24:
+            screen.blit(self.image, self.rect)
+        elif 3 >= int(self.frame) % 6 >= 0:
+            screen.blit(self.image, self.rect)
+
+
 objects = []
 bullets = []
+bonuses = []
 
 Tank(100, 100, 0, "Blue", (pygame.K_a, pygame.K_d,
      pygame.K_w, pygame.K_s, pygame.K_SPACE))
@@ -216,11 +265,22 @@ for _ in range(110):
             break
     Obstacle(x, y, TILE_SIZE)
 
+soundStart.play()
 play = True
 while play:
     for event in pygame.event.get():
         if pygame.QUIT == event.type:
             play = False
+
+    if BONUSCD >= 54:
+        BONUSCD = 0
+        for _ in range(3):
+            bonusNum = randint(0, 1)
+            x = randint(0, WIDTH // TILE_SIZE - 1) * TILE_SIZE
+            y = randint(1, HEIGHT // TILE_SIZE - 1) * TILE_SIZE
+            rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+            Bonus(x, y, bonusNum)
+    BONUSCD += 0.1
 
     keys = pygame.key.get_pressed()
 
@@ -228,11 +288,15 @@ while play:
         object.update()
     for bullet in bullets:
         bullet.update()
+    for bonus in bonuses:
+        bonus.update()
     screen.fill((0, 0, 0))
-    for bullet in bullets:
-        bullet.draw()
     for object in objects:
         object.draw()
+    for bonus in bonuses:
+        bonus.draw()
+    for bullet in bullets:
+        bullet.draw()
     ui.draw()
 
     t = 0
@@ -249,6 +313,7 @@ while play:
 
         pygame.draw.rect(screen, tankWin.color,
                          (WIDTH // 2 - 100, HEIGHT // 2, 200, 200))
+        soundFinish.play()
 
     pygame.display.update()
     clock.tick(FPS)
