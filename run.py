@@ -9,15 +9,16 @@ pygame.init()
 
 ui = UI()
 menu_trigger = True
-def change():
+def restart(intent):
     global menu_trigger
     menu_trigger = not menu_trigger
-    # main_class.reset()
-    # objects = []
+    if intent == "restart":
+        main_class.restart()
 
 
+    
 
-menu = main_menu(change)
+menu = main_menu(restart)
 
 main_class.spawn_tanks()
 main_class.spawn_obstacles()
@@ -40,7 +41,7 @@ while play:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 menu_trigger = not menu_trigger
-                screen = pygame.display.set_mode((WIDTH, HEIGHT))
+                # screen = pygame.display.set_mode((WIDTH, HEIGHT))
     if menu_trigger:
         menu.draw()
     else:

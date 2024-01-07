@@ -1,7 +1,6 @@
 import pygame
 import os
 from random import randint
-# from run import change 
 pygame.init()
 #
 HEIGHT, WIDTH = 1024, 1024
@@ -10,8 +9,8 @@ BONUS_SIZE = TILE_SIZE // 2
 FPS = 60
 DIRECTS = [[0, -1], [1, 0], [0, 1], [-1, 0]]
 BONUSCD = 54
-
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+# os.environ['SDL_VIDEO_CENTERED'] = '1'
 clock = pygame.time.Clock()
 fontUI = pygame.font.Font(None, 30)
 fontBig = pygame.font.Font(None, 70)
@@ -71,8 +70,10 @@ class main_menu:
         self.rect = self.image.get_rect()
         self.screen = pygame.display.set_mode(self.rect.size)
         self.main_font = pygame.font.Font("fonts/TheDark-pr2Z.ttf", 290)
-        self.sub_font = pygame.font.SysFont("arial", 80)
-        self.change = ch
+        self.main_font1 = pygame.font.Font("fonts/TheDark-pr2Z.ttf", 300)
+        self.main_font2 = pygame.font.Font("fonts/TheDark-pr2Z.ttf", 270)
+        self.sub_font = pygame.font.Font("fonts/ZilapSleepGrunge-zLnX.ttf", 100)
+        self.restart = ch
  
         
         self.buff = [0,10,20,30,40]
@@ -93,12 +94,16 @@ class main_menu:
                 soundShot.set_volume(1)
                 soundStart.set_volume(1)
                 soundDestroy.set_volume(1)
-        if 320 < pos[0] < 715 and 835 < pos[1] < 935:
-            objects = []
-            bullets = []
-            bonuses = []
-            self.change()
+        if 100 < pos[0] < 495 and 835 < pos[1] < 935:
+            print("pause")
+            self.restart("")
 
+        if 540 < pos[0] < 940 and 835 < pos[1] < 935:
+            print('reset')
+            objects.clear()
+            bullets.clear()
+            bonuses.clear()
+            self.restart("restart")
 
     def draw(self):
         self.screen.blit(self.image, (0, 0))
@@ -110,20 +115,43 @@ class main_menu:
             self.screen.blit(imgUnmute, (1024-100, 10))
         # Text animation
         tick = pygame.time.get_ticks()
-        clock.tick(FPS*2)
+        clock.tick(FPS)
         for i in range(4):
             self.buff[i] = self.buff[i+1]
-        self.buff[4] = self.buff[3] + (randint(0,2) if self.buff[3] < randint(30,150) else randint(-3,-1))
-        self.draw_text(self.screen, "T", self.main_font, (self.buff[0],self.buff[0],self.buff[0]), WIDTH // 2-290, HEIGHT // 2-20)
-        self.draw_text(self.screen, "A", self.main_font, (self.buff[1],self.buff[1],self.buff[1]), WIDTH // 2-165, HEIGHT // 2-20)
-        self.draw_text(self.screen, "N", self.main_font, (self.buff[2],self.buff[2],self.buff[2]), WIDTH // 2-10, HEIGHT // 2-20)
-        self.draw_text(self.screen, "K", self.main_font, (self.buff[3],self.buff[3],self.buff[3]), WIDTH // 2+155, HEIGHT // 2-20)
-        self.draw_text(self.screen, "S", self.main_font, (self.buff[4],self.buff[4],self.buff[4]), WIDTH // 2+310, HEIGHT // 2-20)
-        # game reset button
-        pygame.draw.rect(self.screen, (125,125,125), (512-200, 820, 400, 110),border_radius=13)
-        pygame.draw.rect(self.screen, (0,0,0), (512-200, 820, 400, 110),3,border_radius=13)
-        self.draw_text(self.screen, "PLAY", self.sub_font, 'white', 512, 880)
-        
+        self.buff[4] = self.buff[3] + (randint(1,10)/10 if self.buff[3] < randint(50,150) else randint(-10,-1)/10)
+        ###
+        self.draw_text(self.screen, "T", self.main_font1, (0,0,0), WIDTH // 2-290, HEIGHT // 2-20)
+        self.draw_text(self.screen, "A", self.main_font1, (0,0,0), WIDTH // 2-170, HEIGHT // 2-20)
+        self.draw_text(self.screen, "N", self.main_font1, (0,0,0), WIDTH // 2-10, HEIGHT // 2-20)
+        self.draw_text(self.screen, "K", self.main_font1, (0,0,0), WIDTH // 2+160, HEIGHT // 2-20)
+        self.draw_text(self.screen, "S", self.main_font1, (0,0,0), WIDTH // 2+325, HEIGHT // 2-20)
+
+        self.draw_text(self.screen, "T", self.main_font2, (0,0,0), WIDTH // 2-290, HEIGHT // 2-20)
+        self.draw_text(self.screen, "A", self.main_font2, (0,0,0), WIDTH // 2-170, HEIGHT // 2-20)
+        self.draw_text(self.screen, "N", self.main_font2, (0,0,0), WIDTH // 2-10, HEIGHT // 2-20)
+        self.draw_text(self.screen, "K", self.main_font2, (0,0,0), WIDTH // 2+160, HEIGHT // 2-20)
+        self.draw_text(self.screen, "S", self.main_font2, (0,0,0), WIDTH // 2+325, HEIGHT // 2-20)
+       
+        ###
+        self.draw_text(self.screen, "T", self.main_font, (int(self.buff[0]),int(self.buff[0]),int(self.buff[0])), WIDTH // 2-290, HEIGHT // 2-20)
+        self.draw_text(self.screen, "A", self.main_font, (int(self.buff[1]),int(self.buff[1]),int(self.buff[1])), WIDTH // 2-170, HEIGHT // 2-20)
+        self.draw_text(self.screen, "N", self.main_font, (int(self.buff[2]),int(self.buff[2]),int(self.buff[2])), WIDTH // 2-10, HEIGHT // 2-20)
+        self.draw_text(self.screen, "K", self.main_font, (int(self.buff[3]),int(self.buff[3]),int(self.buff[3])), WIDTH // 2+160, HEIGHT // 2-20)
+        self.draw_text(self.screen, "S", self.main_font, (int(self.buff[4]),int(self.buff[4]),int(self.buff[4])), WIDTH // 2+325, HEIGHT // 2-20)
+        # play button 
+        s = pygame.Surface((400, 110))
+        s.set_alpha(120)
+        s.fill((60,60,60))
+        self.screen.blit(s, (512-420, 820, 400, 110))
+        pygame.draw.rect(self.screen, (0,0,0), (512-420, 820, 400, 110),5)
+        self.draw_text(self.screen, "PLAY", self.sub_font, 'black', 512-220, 875)
+        # reset button
+        l = pygame.Surface((400, 110))
+        l.set_alpha(120)
+        l.fill((60,60,60))
+        self.screen.blit(l, (512+20, 820, 400, 110))
+        pygame.draw.rect(self.screen, (0,0,0), (512+20, 820, 400, 110),5)
+        self.draw_text(self.screen, "RESET", self.sub_font, 'black', 512+220, 875)
 
         
 

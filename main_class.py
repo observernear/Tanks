@@ -69,8 +69,9 @@ class main_class:
                              (WIDTH // 2 - 100, HEIGHT // 2, 200, 200))
     def click(pos):
         pass
-    def reset():
-            for i in objects:
-                if i.type == 'obstacle':
-                    i.damage(100)
-            # main_class.spawn_obstacles()
+    def restart():
+        main_class.spawn_tanks()
+        main_class.spawn_obstacles()
+        bullets.clear()
+        bonuses.clear()
+        
