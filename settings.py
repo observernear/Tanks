@@ -1,7 +1,7 @@
 import pygame
 import os
 from random import randint
-
+# from run import change 
 pygame.init()
 #
 HEIGHT, WIDTH = 1024, 1024
@@ -42,8 +42,9 @@ imgBonuses = [
     pygame.image.load('data/bonus_helmet.png'),
     pygame.image.load('data/bonus_tank.png')]
 imgNone = pygame.image.load('data/block_none.png')
-imgMain = pygame.image.load('main_img.png')
-
+imgMain = pygame.image.load('main_img.jpg')
+imgMute = pygame.image.load('images/mute.png')
+imgUnmute = pygame.image.load('images/unmute.png')
 soundStart = pygame.mixer.Sound('sounds/level_start.mp3')
 soundShot = pygame.mixer.Sound('sounds/shot.wav')
 soundDestroy = pygame.mixer.Sound('sounds/destroy.wav')
@@ -53,17 +54,80 @@ soundFinish = pygame.mixer.Sound('sounds/level_finish.mp3')
 objects = []
 bullets = []
 bonuses = []
-
+isMuted = False
 
 class main_menu:
-    def __init__(self):
+    def draw_text(self,screen, text, font, color, x, y, opacity=255):
+            
+            text_surface = font.render(text, True, color)
+            text_surface.set_alpha(opacity)
+            text_rect = text_surface.get_rect()
+            text_rect.center = (x, y)
+            screen.blit(text_surface, text_rect)
+
+
+    def __init__(self, ch):
         self.image = imgMain
         self.rect = self.image.get_rect()
         self.screen = pygame.display.set_mode(self.rect.size)
+        self.main_font = pygame.font.Font("fonts/TheDark-pr2Z.ttf", 290)
+        self.sub_font = pygame.font.SysFont("arial", 80)
+        self.change = ch
+ 
+        
+        self.buff = [0,10,20,30,40]
+    
+    def click(self, pos):
+        if 1024-100 < pos[0] < 1024 and 10 < pos[1] < 140:
+            global isMuted
+            isMuted = not isMuted
+            if isMuted:
+                soundDead.set_volume(0)
+                soundFinish.set_volume(0)
+                soundShot.set_volume(0)
+                soundStart.set_volume(0)
+                soundDestroy.set_volume(0)
+            else:
+                soundDead.set_volume(1)
+                soundFinish.set_volume(1)
+                soundShot.set_volume(1)
+                soundStart.set_volume(1)
+                soundDestroy.set_volume(1)
+        if 320 < pos[0] < 715 and 835 < pos[1] < 935:
+            objects = []
+            bullets = []
+            bonuses = []
+            self.change()
+
 
     def draw(self):
         self.screen.blit(self.image, (0, 0))
+        # Mute button
+        pygame.draw.rect(self.screen, 'black', (1024-115, 5, 110, 110),5,13) 
+        if isMuted:
+            self.screen.blit(imgMute, (1024-100, 10))
+        else:
+            self.screen.blit(imgUnmute, (1024-100, 10))
+        # Text animation
+        tick = pygame.time.get_ticks()
+        clock.tick(FPS*2)
+        for i in range(4):
+            self.buff[i] = self.buff[i+1]
+        self.buff[4] = self.buff[3] + (randint(0,2) if self.buff[3] < randint(30,150) else randint(-3,-1))
+        self.draw_text(self.screen, "T", self.main_font, (self.buff[0],self.buff[0],self.buff[0]), WIDTH // 2-290, HEIGHT // 2-20)
+        self.draw_text(self.screen, "A", self.main_font, (self.buff[1],self.buff[1],self.buff[1]), WIDTH // 2-165, HEIGHT // 2-20)
+        self.draw_text(self.screen, "N", self.main_font, (self.buff[2],self.buff[2],self.buff[2]), WIDTH // 2-10, HEIGHT // 2-20)
+        self.draw_text(self.screen, "K", self.main_font, (self.buff[3],self.buff[3],self.buff[3]), WIDTH // 2+155, HEIGHT // 2-20)
+        self.draw_text(self.screen, "S", self.main_font, (self.buff[4],self.buff[4],self.buff[4]), WIDTH // 2+310, HEIGHT // 2-20)
+        # game reset button
+        pygame.draw.rect(self.screen, (125,125,125), (512-200, 820, 400, 110),border_radius=13)
+        pygame.draw.rect(self.screen, (0,0,0), (512-200, 820, 400, 110),3,border_radius=13)
+        self.draw_text(self.screen, "PLAY", self.sub_font, 'white', 512, 880)
+        
 
+        
+
+        
 
 class Tank:
     def __init__(self, px, py, direct, color, keyList):

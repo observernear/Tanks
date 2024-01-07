@@ -2,6 +2,7 @@ from settings import *
 
 
 class main_class:
+    
     def draw():
         for object in objects:
             object.draw()
@@ -66,3 +67,10 @@ class main_class:
 
             pygame.draw.rect(screen, tankWin.color,
                              (WIDTH // 2 - 100, HEIGHT // 2, 200, 200))
+    def click(pos):
+        pass
+    def reset():
+            for i in objects:
+                if i.type == 'obstacle':
+                    i.damage(100)
+            # main_class.spawn_obstacles()

@@ -6,20 +6,35 @@ from main_class import main_class
 
 pygame.init()
 
-ui = UI()
 
-menu = main_menu()
+ui = UI()
+menu_trigger = True
+def change():
+    global menu_trigger
+    menu_trigger = not menu_trigger
+    # main_class.reset()
+    # objects = []
+
+
+
+menu = main_menu(change)
 
 main_class.spawn_tanks()
-
 main_class.spawn_obstacles()
 
 soundStart.play()
-
-menu_trigger = True
 play = True
+
 while play:
     for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                coords = event.pos
+                if menu_trigger:
+                    menu.click(coords)
+                else:
+                    main_class.click(coords)
+                print(coords)
         if pygame.QUIT == event.type:
             play = False
         if event.type == pygame.KEYDOWN:
