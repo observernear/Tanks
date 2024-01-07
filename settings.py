@@ -49,6 +49,7 @@ soundShot = pygame.mixer.Sound('sounds/shot.wav')
 soundDestroy = pygame.mixer.Sound('sounds/destroy.wav')
 soundDead = pygame.mixer.Sound('sounds/dead.wav')
 soundFinish = pygame.mixer.Sound('sounds/level_finish.mp3')
+soundClick = pygame.mixer.Sound('sounds/click.wav')
 
 objects = []
 bullets = []
@@ -80,6 +81,7 @@ class main_menu:
     
     def click(self, pos):
         if 1024-100 < pos[0] < 1024 and 10 < pos[1] < 140:
+            soundClick.play()
             global isMuted
             isMuted = not isMuted
             if isMuted:
@@ -88,18 +90,20 @@ class main_menu:
                 soundShot.set_volume(0)
                 soundStart.set_volume(0)
                 soundDestroy.set_volume(0)
+                soundClick.set_volume(0)
             else:
                 soundDead.set_volume(1)
                 soundFinish.set_volume(1)
                 soundShot.set_volume(1)
                 soundStart.set_volume(1)
                 soundDestroy.set_volume(1)
-        if 100 < pos[0] < 495 and 835 < pos[1] < 935:
-            print("pause")
+                soundClick.set_volume(1)
+        elif 100 < pos[0] < 495 and 835 < pos[1] < 935:
+            soundClick.play()
             self.restart("")
 
         if 540 < pos[0] < 940 and 835 < pos[1] < 935:
-            print('reset')
+            soundClick.play()
             objects.clear()
             bullets.clear()
             bonuses.clear()
