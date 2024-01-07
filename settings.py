@@ -14,6 +14,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 fontUI = pygame.font.Font(None, 30)
 fontBig = pygame.font.Font(None, 70)
+fontMegaBig = pygame.font.Font(None, 10)
 cursor_image = pygame.image.load(os.path.join("data", "cursor.png"))
 cursor_image = pygame.transform.scale(cursor_image, (30, 30))
 cursor_rect = cursor_image.get_rect()
@@ -214,6 +215,8 @@ class Tank:
             dy = DIRECTS[self.direct][1] * self.bulletSpeed
             Bullet(self, self.rect.centerx, self.rect.centery,
                    dx, dy, self.bulletDamage)
+            if self.bulletDamage > 1:
+                self.bulletDamage = 1
             self.shotTimer = self.shotDelay
 
         if self.shotTimer > 0:
@@ -236,25 +239,54 @@ class Tank:
 
 class UI:
     def __init__(self):
-        pass
+        self.main_font = pygame.font.Font("fonts/ZilapSleepGrunge-zLnX.ttf", 40)
 
     def update(self):
         pass
 
     def draw(self):
-        i = 0
+        # i = 0
+        border = pygame.Rect(0, 0, 1024, 64)
+        big_border = pygame.Rect(0, 0, 1024, 1024)
+        pygame.draw.rect(screen, 'gray', big_border, 2)
+        pygame.draw.line(screen, 'white', (512, 0), (512, 60), 2)
+        pygame.draw.rect(screen, 'white', border, 2)
         for object in objects:
             if object.type == 'tank':
-                pygame.draw.rect(screen, object.color, (5 + i * 70, 5, 22, 22))
+                if object.color == 'Blue':
+                    label = self.main_font.render('PLAYER 1', 1, 'white')
+                    rect1 = label.get_rect(center=(80, 30))
+                    
+                    pygame.draw.rect(screen, (220,20,20), (200, 15, 55*min(object.HP,5), 30))
+                    for d in range(5):
+                        pygame.draw.rect(screen, 'black', (200 + 55*d, 15, 55, 30), 2)
+                    #     pygame.draw.rect(screen, "black", (200 + 50*i, 15, 50, 30))
+                    if object.HP > 5:
+                        for i in range(min(object.HP-5, 5)):
+                            pygame.draw.rect(screen, 'yellow', (200 + 55*i, 15, 55, 30), 4)
 
-                text = fontUI.render(str(object.bulletDamage), 1, 'black')
-                rect = text.get_rect(center=(5 + i * 70 + 11, 5 + 11))
-                screen.blit(text, rect)
 
-                text = fontUI.render(str(object.HP), 1, object.color)
-                rect = text.get_rect(center=(5 + i * 70 + 32, 5 + 11))
-                screen.blit(text, rect)
-                i += 1
+                elif object.color == 'Red':
+                    label = self.main_font.render('PLAYER 2', 1, 'white')
+                    rect1 = label.get_rect(center=(940, 30))
+                    pygame.draw.rect(screen, (220,20,20), (550, 15, 55*min(object.HP,5), 30))
+                    for d in range(5):
+                        pygame.draw.rect(screen, 'black', (550 + 55*d, 15, 55, 30), 2)
+                    if object.HP > 5:
+                        for i in range(min(object.HP-5, 5)):
+                            pygame.draw.rect(screen, 'yellow', (550 + 55*i, 15, 55, 30), 4)
+                
+                screen.blit(label, rect1)
+                # pygame.draw.rect(screen, object.color, (5 + i * 70, 5, 22, 22))
+
+                # text = fontUI.render(str(object.bulletDamage), 1, 'black')
+                # rect = text.get_rect(center=(100, 50))
+                # screen.blit(text, rect)
+
+                # text = fontUI.render(str(object.HP), 1, object.color)
+                # rect = text.get_rect(center=(5 + i * 70 + 32, 5 + 11))
+                # screen.blit(text, rect)
+                # i += 1
 
 
 class Bullet:

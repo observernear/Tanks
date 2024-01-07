@@ -22,7 +22,7 @@ class main_class:
     def spawn_tanks():
         Tank(100, 100, 0, "Blue", (pygame.K_a, pygame.K_d,
                                    pygame.K_w, pygame.K_s, pygame.K_SPACE))
-        Tank(700, 100, 1, "Red", (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP,
+        Tank(700, 700, 1, "Red", (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP,
                                   pygame.K_DOWN, pygame.K_x))
 
     def spawn_bonuses():
@@ -59,19 +59,30 @@ class main_class:
                 tankWin = obj
 
         if t == 1:
-
+            # clock.tick(24)
             bullets.clear()
-            text = fontBig.render('ПОБЕДИЛ', 1, 'white')
-            rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 100))
+            pygame.draw.rect(screen, 'black', (0, HEIGHT // 2-100, 1024, 200))
+            if tankWin.color == 'Blue':
+                text = fontMegaBig.render('PLAYER 1 WINS', 1, 'white')
+            else:
+                text = fontMegaBig.render('PLAYER 2 WINS', 1, 'white')
+            rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
             screen.blit(text, rect)
+            for i in range(32):
+                e = Explosion(1024//32*i, HEIGHT // 2-120)
+                e = Explosion(1024//32*i, HEIGHT // 2+120)
+                e = Explosion(1024//32*i, HEIGHT // 2-220)
+                e = Explosion(1024//32*i, HEIGHT // 2+220)
+            
 
-            pygame.draw.rect(screen, tankWin.color,
-                             (WIDTH // 2 - 100, HEIGHT // 2, 200, 200))
+            # pygame.draw.rect(screen, tankWin.color,
+            #                  (WIDTH // 2 - 100, HEIGHT // 2, 200, 200))
     def click(pos):
         pass
     def restart():
-        main_class.spawn_tanks()
-        main_class.spawn_obstacles()
         bullets.clear()
         bonuses.clear()
+        main_class.spawn_tanks()
+        main_class.spawn_obstacles()
+        main_class.spawn_bonuses()
         

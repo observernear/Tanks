@@ -14,6 +14,7 @@ def restart(intent):
     menu_trigger = not menu_trigger
     if intent == "restart":
         main_class.restart()
+        main_class.spawn_bonuses()
 
 
     
@@ -35,7 +36,7 @@ while play:
                     menu.click(coords)
                 else:
                     main_class.click(coords)
-                print(coords)
+                # print(coords)
         if pygame.QUIT == event.type:
             play = False
         if event.type == pygame.KEYDOWN:
