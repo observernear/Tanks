@@ -14,7 +14,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 fontUI = pygame.font.Font(None, 30)
 fontBig = pygame.font.Font(None, 70)
-fontMegaBig = pygame.font.Font(None, 10)
+fontMegaBig = pygame.font.Font(None, 170)
 cursor_image = pygame.image.load(os.path.join("data", "cursor.png"))
 cursor_image = pygame.transform.scale(cursor_image, (30, 30))
 cursor_rect = cursor_image.get_rect()
@@ -228,7 +228,15 @@ class Tank:
                     self.rect.topleft = oldx, oldy
 
     def draw(self):
-        screen.blit(self.image, self.rect)
+        # 
+        if self.bulletDamage > 1:
+            surf = pygame.Surface((self.image.get_size())).convert_alpha()
+            surf.fill((150, 75, 50, 125))
+            self.image.blit(surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+            screen.blit(self.image, self.rect)
+        else:
+            screen.blit(self.image, self.rect)
+        
 
     def damage(self, value):
         self.HP -= value
@@ -377,6 +385,7 @@ class Bonus:
                 elif self.bonusNum == 1:
                     if object.moveSpeed < 5:
                         object.moveSpeed += 1
+                        
                     if object.bulletDamage < 3:
                         object.bulletDamage += 1
 

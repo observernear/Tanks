@@ -23,7 +23,7 @@ class main_class:
         Tank(100, 100, 0, "Blue", (pygame.K_a, pygame.K_d,
                                    pygame.K_w, pygame.K_s, pygame.K_SPACE))
         Tank(700, 700, 1, "Red", (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP,
-                                  pygame.K_DOWN, pygame.K_x))
+                                  pygame.K_DOWN, pygame.K_m))
 
     def spawn_bonuses():
         global BONUSCD
