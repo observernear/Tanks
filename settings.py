@@ -23,6 +23,9 @@ pygame.mouse.set_visible(False)
 pygame.display.set_caption("Tanks")
 
 imgObstacle = pygame.image.load("data/obstacle.png")
+imgArmor = pygame.image.load("data/block_armor.png")
+imgBrick = pygame.image.load("data/block_brick.png")
+imgIce = pygame.image.load("data/block_ice.png")
 imgTanks = [
     pygame.image.load('data/tank1.png'),
     pygame.image.load('data/tank2.png'),
@@ -347,17 +350,41 @@ class Explosion:
 
 class Obstacle:
     def __init__(self, px, py, size):
+        tipe = randint(0, 20)
+        self.t = 0
+        if tipe == 20:
+            self.t = 4
+            self.HP = 15
+        elif tipe > 18:
+            self.t = 3
+            self.HP = 8
+        elif tipe > 13:
+            self.t = 2
+            self.HP = 2
+        else:
+            self.t = 1
+            self.HP = 1
+        
         objects.append(self)
         self.type = "obstacle"
 
         self.rect = pygame.Rect(px, py, size, size)
-        self.HP = 1
+        
 
     def update(self, keys):
         pass
 
     def draw(self):
-        screen.blit(imgObstacle, self.rect)
+        # screen.blit(imgObstacle, self.rect)
+        match self.t:
+            case 4:
+                screen.blit(imgIce, self.rect)
+            case 3:
+                screen.blit(imgArmor, self.rect)
+            case 2:
+                screen.blit(imgObstacle, self.rect)
+            case 1:
+                screen.blit(imgBrick, self.rect)
 
     def damage(self, value):
         self.HP -= value
