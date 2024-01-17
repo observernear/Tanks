@@ -32,7 +32,7 @@ while play:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 coords = event.pos
-                if menu_trigger:
+                if menu_trigger: 
                     menu.click(coords)
                 else:
                     main_class.click(coords)
